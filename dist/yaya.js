@@ -70,7 +70,11 @@
           key: key
         });
       });
-      B = this.svg.selectAll('.yaya-body').data(bodyList);
+      B = this.svg.selectAll('.yaya-body').data(bodyList, function(_arg) {
+        var key;
+        key = _arg.key;
+        return key;
+      });
       B.exit().remove();
       G = B.enter().append('g');
       G.attr('class', 'yaya-body').attr('id', function(_arg) {
@@ -78,10 +82,19 @@
         key = _arg.key;
         return 'yaya-body-' + key;
       });
+      G.filter(function(_arg) {
+        var body;
+        body = _arg.body;
+        return body.boundary != null;
+      }).append('path').attr('d', function(_arg) {
+        var body;
+        body = _arg.body;
+        return body.boundary.pathStr;
+      }).attr('class', 'yaya-boundary');
       if (this.options.frameMarker) {
         G.append('use').attr('xlink:href', '#yaya-frame-marker');
       }
-      B.attr('transform', (function(_this) {
+      return B.attr('transform', (function(_this) {
         return function(_arg) {
           var body, th, x, y, _ref2;
           body = _arg.body;
@@ -92,15 +105,6 @@
           return "translate(" + x + "," + y + ")rotate(" + th + ")";
         };
       })(this));
-      return B.filter(function(_arg) {
-        var body;
-        body = _arg.body;
-        return body.boundary != null;
-      }).append('path').attr('d', function(_arg) {
-        var body;
-        body = _arg.body;
-        return body.boundary.pathStr;
-      }).attr('class', 'yaya-boundary');
     };
 
     return Yaya;

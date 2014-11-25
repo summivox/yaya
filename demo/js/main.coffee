@@ -23,11 +23,14 @@ runWorld = (w, duration) ->
   w._getAcc 0
   ms0 = null
   ms1 = null
+  fps = 0
   window.requestAnimationFrame handler = (ms) ->
-    if !ms0?
-      ms0 = ms
-      ms1 = ms + duration
-    console.log ms
+    # time handling (incl. fps calc)
+    if !ms0? then ms1 = ms + duration
+    dt = ms - ms0
+    ms0 = ms
+    fps = do (a=0.1) -> (1-a)*fps + a*(1000/dt)
+    d3.select('#fps').text(fps.toFixed(1))
     w.update ms
     if ms < ms1
       window.requestAnimationFrame handler

@@ -35,17 +35,23 @@
   };
 
   runWorld = function(w, duration) {
-    var handler, ms0, ms1;
+    var fps, handler, ms0, ms1;
     w.solver = Solver.verletFixed;
     w._getAcc(0);
     ms0 = null;
     ms1 = null;
+    fps = 0;
     return window.requestAnimationFrame(handler = function(ms) {
+      var dt;
       if (ms0 == null) {
-        ms0 = ms;
         ms1 = ms + duration;
       }
-      console.log(ms);
+      dt = ms - ms0;
+      ms0 = ms;
+      fps = (function(a) {
+        return (1 - a) * fps + a * (1000 / dt);
+      })(0.1);
+      d3.select('#fps').text(fps.toFixed(1));
       w.update(ms);
       if (ms < ms1) {
         return window.requestAnimationFrame(handler);

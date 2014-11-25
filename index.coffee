@@ -57,7 +57,7 @@ module.exports = class Yaya extends World
     ############
     # graphics
 
-    B = @svg.selectAll('.yaya-body').data(bodyList)
+    B = @svg.selectAll('.yaya-body').data(bodyList, ({key}) -> key)
 
     # removed/added bodies
     B.exit().remove()
@@ -65,6 +65,11 @@ module.exports = class Yaya extends World
     G
       .attr 'class', 'yaya-body'
       .attr 'id', ({key}) -> 'yaya-body-' + key
+    G
+      .filter ({body}) -> body.boundary?
+      .append 'path'
+      .attr 'd', ({body}) -> body.boundary.pathStr
+      .attr 'class', 'yaya-boundary'
     if @options.frameMarker
       G.append('use').attr('xlink:href', '#yaya-frame-marker')
 
@@ -75,10 +80,5 @@ module.exports = class Yaya extends World
       y = y * -@options.spaceScale
       th = -th*RAD
       "translate(#{x},#{y})rotate(#{th})"
-    B
-      .filter ({body}) -> body.boundary?
-      .append 'path'
-        .attr 'd', ({body}) -> body.boundary.pathStr
-        .attr 'class', 'yaya-boundary'
 
 _.merge module.exports, {Body, Force, SE2, Solver}
