@@ -1,0 +1,14 @@
+<g id="yaya-frame-marker">
+    <path id="x-stem" d="
+                M 0 0 L 45 0
+            " stroke="#006600" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path id="x-arrow" d="
+                M 50 0 l -10 -5 v 10 Z
+            " stroke="none" fill="#006600" />
+    <path id="y-stem" d="
+                M 0 0 L 0 -45
+            " stroke="#990000" stroke-width="3" stroke-linecap="round" fill="none"/>
+    <path id="y-arrow" d="
+                M 0 -50 l -5 10 h 10 Z
+            " stroke="none" fill="#990000" />
+</g>

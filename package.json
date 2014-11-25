@@ -1,0 +1,30 @@
+{
+  "name": "yaya",
+  "version": "0.0.1",
+  "dependencies": {
+    "jquery": "2.x",
+    "yaya-core": "0.0.1",
+    "lodash": "latest",
+    "numeric": "latest"
+  },
+  "devDependencies": {
+    "iced-coffee-script": "latest",
+    "coffee-script": "latest",
+    "browserify": "latest",
+    "coffeeify": "latest",
+    "brfs": "latest",
+    "grunt": "latest",
+    "grunt-browserify": "latest",
+    "grunt-contrib-clean": "latest",
+    "grunt-contrib-uglify": "latest",
+    "grunt-iced-coffee": "latest"
+  },
+  "main": "index.js",
+  "browserify": {
+    "standalone": "yaya",
+    "transform": [
+      "coffeeify",
+      "brfs"
+    ]
+  }
+}
