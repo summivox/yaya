@@ -20,13 +20,12 @@
 
   FRAME_MARKER = fs.readFileSync('res/frame-marker.svg');
 
-  STYLE = "<![CDATA[" + (fs.readFileSync('res/style.css')) + "]]>";
-
-  console.log(STYLE);
+  STYLE = fs.readFileSync('res/style.css');
 
   defaultOptions = {
     timeScale: 1000,
-    frameMarker: true
+    frameMarker: true,
+    showCollision: true
   };
 
   module.exports = Yaya = (function(_super) {
@@ -51,13 +50,37 @@
     }
 
     Yaya.prototype.update = function(realTime) {
-      var B, G, bodyList, dtRem;
+      var B, G, X, bodyList, collList, collPoints, dtRem, k;
       if (this.realTime == null) {
         this.realTime = realTime;
       } else {
         dtRem = (realTime - this.realTime) / this.options.timeScale;
         this.realTime = realTime;
-        while (abs(dtRem) > 1e-5) {
+        if (this.options.showCollision) {
+          collPoints = [];
+          collList = null;
+          dtRem -= this.step(dtRem, {
+            collision: function(cL) {
+              var x, xs, y, _i, _len, _results;
+              collList = cL;
+              _results = [];
+              for (_i = 0, _len = collList.length; _i < _len; _i++) {
+                xs = collList[_i].xs;
+                _results.push((function() {
+                  var _j, _len1, _ref2, _results1;
+                  _results1 = [];
+                  for (_j = 0, _len1 = xs.length; _j < _len1; _j++) {
+                    _ref2 = xs[_j], x = _ref2.x, y = _ref2.y;
+                    _results1.push(collPoints.push([x, y]));
+                  }
+                  return _results1;
+                })());
+              }
+              return _results;
+            }
+          });
+        }
+        while (dtRem > 1e-5) {
           dtRem -= this.step(dtRem);
         }
       }
@@ -68,6 +91,7 @@
           key: key
         });
       });
+      k = this.options.spaceScale;
       B = this.svg.selectAll('.yaya-body').data(bodyList, function(_arg) {
         var key;
         key = _arg.key;
@@ -92,17 +116,27 @@
       if (this.options.frameMarker) {
         G.append('use').attr('xlink:href', '#yaya-frame-marker');
       }
-      return B.attr('transform', (function(_this) {
+      B.attr('transform', (function(_this) {
         return function(_arg) {
           var body, th, x, y, _ref2;
           body = _arg.body;
           _ref2 = body.frame.pos, x = _ref2.x, y = _ref2.y, th = _ref2.th;
-          x = x * _this.options.spaceScale;
-          y = y * -_this.options.spaceScale;
+          x = x * k;
+          y = y * -k;
           th = -th * RAD;
           return "translate(" + x + "," + y + ")rotate(" + th + ")";
         };
       })(this));
+      if (this.options.showCollision && collPoints) {
+        X = this.svg.selectAll('.yaya-x').data(collPoints);
+        X.exit().remove();
+        X.enter().append('circle').attr('class', 'yaya-x').attr('r', 8);
+        return X.attr('cx', function(p) {
+          return p[0] * k;
+        }).attr('cy', function(p) {
+          return p[1] * -k;
+        });
+      }
     };
 
     return Yaya;

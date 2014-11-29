@@ -1,2 +1,1 @@
-npm i --save ../yaya-core
-grunt
+npm i --save ../yaya-core && grunt

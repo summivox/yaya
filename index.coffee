@@ -9,15 +9,14 @@ d3 = require './lib/d3.js'
 # brfs
 fs = require('fs')
 FRAME_MARKER = fs.readFileSync 'res/frame-marker.svg'
-STYLE = """<![CDATA[#{fs.readFileSync 'res/style.css'}]]>"""
-
-console.log STYLE
+STYLE = fs.readFileSync 'res/style.css'
 
 
 # note: omitting yaya-core default options
 defaultOptions = {
   timeScale: 1000 # (1s) in simulated world <=> (timeScale ms) in real time
   frameMarker: true # mark the coordinate frame of every body
+  showCollision: true # mark intersections of boundaries
 }
 
 module.exports = class Yaya extends World
@@ -44,7 +43,18 @@ module.exports = class Yaya extends World
 
       # actually run the simulation
       #TODO: handle min timestep
-      while abs(dtRem) > 1e-5
+
+      if @options.showCollision
+        collPoints = []
+        collList = null
+        dtRem -= @step dtRem,
+          collision: (cL) ->
+            collList = cL
+            for {xs} in collList
+              for {x, y} in xs
+                collPoints.push [x, y]
+
+      while dtRem > 1e-5
         dtRem -= @step dtRem
         #TODO: min/max, observer
 
@@ -55,8 +65,9 @@ module.exports = class Yaya extends World
 
 
     ############
-    # graphics
+    # draw bodies
 
+    k = @options.spaceScale
     B = @svg.selectAll('.yaya-body').data(bodyList, ({key}) -> key)
 
     # removed/added bodies
@@ -76,9 +87,22 @@ module.exports = class Yaya extends World
     # update
     B.attr 'transform', ({body}) =>
       {x, y, th} = body.frame.pos
-      x = x *  @options.spaceScale
-      y = y * -@options.spaceScale
+      x = x *  k
+      y = y * -k
       th = -th*RAD
       "translate(#{x},#{y})rotate(#{th})"
+
+
+    ############
+    # showCollision
+
+    if @options.showCollision && collPoints
+      X = @svg.selectAll('.yaya-x').data(collPoints)
+      X.exit().remove()
+      X.enter().append('circle').attr('class', 'yaya-x').attr('r', 8)
+      X
+        .attr 'cx', (p) -> p[0] *  k
+        .attr 'cy', (p) -> p[1] * -k
+
 
 _.merge module.exports, {Body, Force, SE2, Solver}

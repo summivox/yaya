@@ -1,7 +1,12 @@
 .yaya-body {
 }
 .yaya-boundary {
-    stroke: #00C
-    stroke-width: 1
-    fill: none
+    stroke: #00C;
+    stroke-width: 1;
+    fill: none;
+}
+.yaya-x {
+    stroke: #C0C;
+    stroke-width: 1;
+    fill: none;
 }
