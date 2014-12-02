@@ -9,6 +9,7 @@ d3 = require './lib/d3.js'
 # brfs
 fs = require('fs')
 FRAME_MARKER = fs.readFileSync 'res/frame-marker.svg'
+NORMAL_MARKER = fs.readFileSync 'res/normal-marker.svg'
 STYLE = fs.readFileSync 'res/style.css'
 
 
@@ -31,7 +32,7 @@ module.exports = class Yaya extends World
 
     @svg.append('style').attr('type', 'text/css').html(STYLE)
     if @options.frameMarker
-      @svg.append('defs').html(FRAME_MARKER)
+      @svg.append('defs').html(FRAME_MARKER + NORMAL_MARKER)
 
   update: (realTime) ->
     if !@realTime?
@@ -50,9 +51,9 @@ module.exports = class Yaya extends World
         dtRem -= @step dtRem,
           collision: (cL) ->
             collList = cL
-            for {xs} in collList
-              for {x, y} in xs
-                collPoints.push [x, y]
+            for {contacts} in collList
+              for {p, normal} in contacts
+                collPoints.push {p, th: atan2(normal[1], normal[0])}
 
       while dtRem > 1e-5
         dtRem -= @step dtRem
@@ -85,7 +86,7 @@ module.exports = class Yaya extends World
       G.append('use').attr('xlink:href', '#yaya-frame-marker')
 
     # update
-    B.attr 'transform', ({body}) =>
+    B.attr 'transform', ({body}) ->
       {x, y, th} = body.frame.pos
       x = x *  k
       y = y * -k
@@ -101,8 +102,16 @@ module.exports = class Yaya extends World
       X.exit().remove()
       X.enter().append('circle').attr('class', 'yaya-x').attr('r', 8)
       X
-        .attr 'cx', (p) -> p[0] *  k
-        .attr 'cy', (p) -> p[1] * -k
+        .attr 'cx', ({p}) -> p[0] *  k
+        .attr 'cy', ({p}) -> p[1] * -k
+      normal = @svg.selectAll('.yaya-n').data(collPoints)
+      normal.exit().remove()
+      normal.enter().append('use').attr('class', 'yaya-n').attr('xlink:href', '#yaya-normal-marker')
+      normal.attr 'transform', ({p: [x, y], th}) ->
+        x = x *  k
+        y = y * -k
+        th = -th*RAD
+        "translate(#{x},#{y})rotate(#{th})"
 
 
 _.merge module.exports, {Body, Force, SE2, Solver}

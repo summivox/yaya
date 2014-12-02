@@ -14,10 +14,41 @@ TBS = ->
   w = new yaya '#main',
     timeScale: 10000
     spaceScale: 200
-  b1 = w.addBody 'b1', new Body(1, 1, pos: SE2(1, 1, 0)), 'M 0 50 L -25 0 25 0 Z'
+  b1 = w.addBody 'b1', new Body(1, 1, pos: SE2(1, 1, 0)), 'M 0 25 L -25 -25 25 -25 Z'
   b2 = w.addBody 'b2', new Body(2, 1, pos: SE2(2, 3, 0)), 'M 100 0 Q 0 50 -100 0 Q 0 -50 100 0'
   # b2 = w.addBody 'b2', new Body(2, 1, pos: SE2(2, 3, 0)), 'M 100 0 L 0 50 -100 0 L 0 -50 100 0'
   w.forceFuncs.add b1, b2, spring(1, 1)
+  w
+
+TBS3 = ->
+  w = new yaya '#main',
+    timeScale: 10000
+    spaceScale: 200
+  b1 = w.addBody 'b1', new Body(1, 1, pos: SE2(1, 1, 0)), 'M 0 25 L -25 -25 25 -25 Z'
+  b2 = w.addBody 'b2', new Body(2, 1, pos: SE2(2, 3, 0)), 'M 100 0 Q 0 50 -100 0 Q 0 -50 100 0'
+  # b2 = w.addBody 'b2', new Body(2, 1, pos: SE2(2, 3, 0)), 'M 100 0 L 0 50 -100 0 L 0 -50 100 0'
+  # w.forceFuncs.add b1, b2, spring(1, 1)
+
+  window.p = SE2(1, 1, 0)
+  b1.drive =
+    type: 'pos'
+    func: (t, dt) -> window.p
+
+  w
+
+# wok-potato test
+WP0 = ->
+  w = new yaya '#main',
+    timeScale: 10000
+    spaceScale: 200
+  b0 = w.addBody 'b0', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
+  b1 = w.addBody 'b1', new Body(1, 1), 'M 10 -10 H -10 V 10 H 10 V -10'
+
+  window.p = SE2(0, 1, 0)
+  b1.drive =
+    type: 'pos'
+    func: (t, dt) -> window.p
+
   w
 
 class Runner
@@ -65,5 +96,31 @@ runWorld = (w, duration) ->
   $('#btn_pause').on 'click', -> r.pause()
 #  $('#btn_reset').on 'click', -> r.reset()
 
-window.w = TBS()
-runWorld w, 100000
+# window.w = TBS()
+# window.w = TBS3()
+window.w = WP0()
+runWorld w, Infinity
+
+bindings = new Keys.Bindings()
+bindings.add a, new Keys.Combo Keys.Key[b] for [a, b] in [
+  ['up', 'W']
+  ['down', 'S']
+  ['left', 'A']
+  ['right', 'D']
+  ['CCW', 'Q']
+  ['CW', 'E']
+  ['speedup', 'R']
+  ['speeddown', 'F']
+]
+
+window.speed = 0.01
+bindings.registerHandler a, b for [a, b] in [
+  ['up', -> p.y += window.speed]
+  ['down', -> p.y -= window.speed]
+  ['left', -> p.x -= window.speed]
+  ['right', -> p.x += window.speed]
+  ['CCW', -> p.th += window.speed]
+  ['CW', -> p.th -= window.speed]
+  ['speedup', -> window.speed *= 1.5]
+  ['speeddown', -> window.speed /= 1.5]
+]
