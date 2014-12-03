@@ -1,11 +1,11 @@
-.yaya-body {
+.yaya .yaya-body {
 }
-.yaya-boundary {
+.yaya .yaya-boundary {
     stroke: #00C;
     stroke-width: 1;
     fill: none;
 }
-.yaya-x {
+.yaya .yaya-x {
     stroke: #C0C;
     stroke-width: 1;
     fill: none;

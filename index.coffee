@@ -12,6 +12,8 @@ FRAME_MARKER = fs.readFileSync 'res/frame-marker.svg'
 NORMAL_MARKER = fs.readFileSync 'res/normal-marker.svg'
 STYLE = fs.readFileSync 'res/style.css'
 
+cdataify = (s) -> """<![CDATA[#{s}]]>"""
+
 
 # note: omitting yaya-core default options
 defaultOptions = {
@@ -27,10 +29,14 @@ module.exports = class Yaya extends World
     @options = _.cloneDeep defaultOptions
     _.merge @options, options
     super @options
-    @svg = d3.select(svgEl)
+    @svg = d3.select(svgEl).classed('yaya', true)
     @realTime = null
 
-    @svg.append('style').attr('type', 'text/css').html(STYLE)
+    style = document.createElement('style')
+    style.setAttribute('type', 'text/css')
+    style.innerHTML = STYLE
+    document.head.appendChild style
+
     if @options.frameMarker
       @svg.append('defs').html(FRAME_MARKER + NORMAL_MARKER)
 
@@ -52,8 +58,8 @@ module.exports = class Yaya extends World
           collision: (cL) ->
             collList = cL
             for {contacts} in collList
-              for {p, normal} in contacts
-                collPoints.push {p, th: atan2(normal[1], normal[0])}
+              for {p, lNormal: [x, y]} in contacts
+                collPoints.push {p, th: atan2(y, x)}
 
       while dtRem > 1e-5
         dtRem -= @step dtRem

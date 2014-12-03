@@ -1,4 +1,4 @@
-<g id="yaya-frame-marker">
+<g id="yaya-frame-marker" transform="scale(.25)">
     <path id="x-stem" d="
                 M 0 0 L 45 0
             " stroke="#006600" stroke-width="3" stroke-linecap="round" fill="none"/>

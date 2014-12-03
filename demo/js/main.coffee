@@ -10,7 +10,11 @@ spring = (k, d0) -> (t) ->
   d = M.max d, 1e3*N.epsilon # overlapping bodies have no direction
   new Force v.scale(k*(1-d0/d))
 
+uniformGravity = (g) -> (t, body, id) ->
+  new Force 0, -g*body.m, 0
+
 TBS = ->
+  window.main.setAttribute('viewBox', '-100 -600 800 600')
   w = new yaya '#main',
     timeScale: 10000
     spaceScale: 200
@@ -44,11 +48,30 @@ WP0 = ->
   b0 = w.addBody 'b0', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
   b1 = w.addBody 'b1', new Body(1, 1), 'M 10 -10 H -10 V 10 H 10 V -10'
 
-  window.p = SE2(0, 1, 0)
+  window.p = SE2(0, 0.5, 0)
   b1.drive =
     type: 'pos'
     func: (t, dt) -> window.p
 
+  w
+
+
+# wok-potato collision test
+WP1 = (n) ->
+  w = new yaya '#main',
+    timeScale: 10000
+    spaceScale: 200
+  wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
+  wok.drive = {type: 'pos', func: -> SE2(0, 0, 0)}
+  for i in [1..n]
+    pos = new SE2(
+      (i-n/2)*.2
+      M.random()*.5 + 1
+      M.random()*PI*2
+    )
+    w.addBody "potato#{i}", new Body(5, 5, pos: pos), 'M 10 -10 H -10 V 10 H 10 V -10'
+  w.fields.push uniformGravity 10
+  #TODO: body drag
   w
 
 class Runner
@@ -98,7 +121,8 @@ runWorld = (w, duration) ->
 
 # window.w = TBS()
 # window.w = TBS3()
-window.w = WP0()
+# window.w = WP0()
+window.w = WP1(10)
 runWorld w, Infinity
 
 bindings = new Keys.Bindings()
