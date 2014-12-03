@@ -141,7 +141,7 @@
       if (this.options.showCollision && collPoints) {
         X = this.svg.selectAll('.yaya-x').data(collPoints);
         X.exit().remove();
-        X.enter().append('circle').attr('class', 'yaya-x').attr('r', 8);
+        X.enter().append('circle').attr('class', 'yaya-x').attr('r', 3);
         X.attr('cx', function(_arg) {
           var p;
           p = _arg.p;

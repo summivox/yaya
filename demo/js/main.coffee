@@ -13,6 +13,11 @@ spring = (k, d0) -> (t) ->
 uniformGravity = (g) -> (t, body, id) ->
   new Force 0, -g*body.m, 0
 
+drag = (dv, dw) -> (t, body, id) ->
+  if !dw? then dw = da
+  {x, y, th} = body.frame.vel
+  new Force -x*dv, -y*dv, -th*dw
+
 TBS = ->
   window.main.setAttribute('viewBox', '-100 -600 800 600')
   w = new yaya '#main',
@@ -55,23 +60,30 @@ WP0 = ->
 
   w
 
+potatoPath = (l) -> "M #{l} -#{l} H -#{l} V #{l} H #{l} V -#{l}"
+
 
 # wok-potato collision test
 WP1 = (n) ->
   w = new yaya '#main',
     timeScale: 10000
     spaceScale: 200
+    collision:
+      tol: 1e-2
+      iters: 3
+      cor: 0.15
+      posFix: 0.85
   wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
   wok.drive = {type: 'pos', func: -> SE2(0, 0, 0)}
   for i in [1..n]
     pos = new SE2(
-      (i-n/2)*.2
-      M.random()*.5 + 1
+      ((i-1)-(n-1)/2)/n*1.5
+      M.random()*1.2 + .6
       M.random()*PI*2
     )
-    w.addBody "potato#{i}", new Body(5, 5, pos: pos), 'M 10 -10 H -10 V 10 H 10 V -10'
+    w.addBody "potato#{i}", new Body(5, 0.2, pos: pos), potatoPath(Math.random()*0.5-0.5/2 + 10)
   w.fields.push uniformGravity 10
-  #TODO: body drag
+  w.fields.push drag 15, 45
   w
 
 class Runner

@@ -1,4 +1,4 @@
-<g id="yaya-normal-marker">
+<g id="yaya-normal-marker" transform="scale(0.4)">
     <path id="x-stem" d="
                 M -5 0 L 30 0
             " stroke="#009999" stroke-width="2" stroke-linecap="round" fill="none"/>

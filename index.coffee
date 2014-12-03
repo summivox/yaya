@@ -106,7 +106,7 @@ module.exports = class Yaya extends World
     if @options.showCollision && collPoints
       X = @svg.selectAll('.yaya-x').data(collPoints)
       X.exit().remove()
-      X.enter().append('circle').attr('class', 'yaya-x').attr('r', 8)
+      X.enter().append('circle').attr('class', 'yaya-x').attr('r', 3)
       X
         .attr 'cx', ({p}) -> p[0] *  k
         .attr 'cy', ({p}) -> p[1] * -k
