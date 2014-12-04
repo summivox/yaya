@@ -101,13 +101,13 @@
   WP1 = function(n) {
     var i, pos, w, wok, _i;
     w = new yaya('#main', {
-      timeScale: 10000,
+      timeScale: 5000,
       spaceScale: 200,
       collision: {
-        tol: 1e-2,
-        iters: 3,
-        cor: 0.15,
-        posFix: 0.85
+        tol: 1e-3,
+        iters: 5,
+        cor: 0.1,
+        posFix: 0.75
       }
     });
     wok = w.addBody('wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z');
@@ -200,7 +200,7 @@
     });
   };
 
-  window.w = WP1(10);
+  window.w = WP1(15);
 
   runWorld(w, Infinity);
 

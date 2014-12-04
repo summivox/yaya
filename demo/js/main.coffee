@@ -66,13 +66,13 @@ potatoPath = (l) -> "M #{l} -#{l} H -#{l} V #{l} H #{l} V -#{l}"
 # wok-potato collision test
 WP1 = (n) ->
   w = new yaya '#main',
-    timeScale: 10000
+    timeScale: 5000
     spaceScale: 200
     collision:
-      tol: 1e-2
-      iters: 3
-      cor: 0.15
-      posFix: 0.85
+      tol: 1e-3
+      iters: 5
+      cor: 0.1
+      posFix: 0.75
   wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
   wok.drive = {type: 'pos', func: -> SE2(0, 0, 0)}
   for i in [1..n]
@@ -134,7 +134,7 @@ runWorld = (w, duration) ->
 # window.w = TBS()
 # window.w = TBS3()
 # window.w = WP0()
-window.w = WP1(10)
+window.w = WP1(15)
 runWorld w, Infinity
 
 bindings = new Keys.Bindings()
