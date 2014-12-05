@@ -65,15 +65,16 @@ potatoPath = (l) -> "M #{l} -#{l} H -#{l} V #{l} H #{l} V -#{l}"
 
 # wok-potato collision test
 WP1 = (n) ->
+  window.main.setAttribute('viewBox', '-300 -300 600 400')
   w = new yaya '#main',
     timeScale: 5000
     spaceScale: 200
     collision:
-      tol: 1e-3
-      iters: 5
-      cor: 0.1
+      tol: 1e-2
+      iters: 20
+      cor: 0.00
       posFix: 0.75
-  wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z'
+  wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 100 -150 -100 H -180 V 25 H 180 V -100 Z'
   wok.drive = {type: 'pos', func: -> SE2(0, 0, 0)}
   for i in [1..n]
     pos = new SE2(
@@ -83,7 +84,7 @@ WP1 = (n) ->
     )
     w.addBody "potato#{i}", new Body(5, 0.2, pos: pos), potatoPath(Math.random()*0.5-0.5/2 + 10)
   w.fields.push uniformGravity 10
-  w.fields.push drag 15, 45
+  w.fields.push drag 25, 45
   w
 
 class Runner

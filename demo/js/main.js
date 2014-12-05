@@ -100,17 +100,18 @@
 
   WP1 = function(n) {
     var i, pos, w, wok, _i;
+    window.main.setAttribute('viewBox', '-300 -300 600 400');
     w = new yaya('#main', {
       timeScale: 5000,
       spaceScale: 200,
       collision: {
-        tol: 1e-3,
-        iters: 5,
-        cor: 0.1,
+        tol: 1e-2,
+        iters: 20,
+        cor: 0.00,
         posFix: 0.75
       }
     });
-    wok = w.addBody('wok', new Body(1000, 1000), 'M 150 -100 Q 0 50 -150 -100 H -180 V 25 H 180 V -100 Z');
+    wok = w.addBody('wok', new Body(1000, 1000), 'M 150 -100 Q 0 100 -150 -100 H -180 V 25 H 180 V -100 Z');
     wok.drive = {
       type: 'pos',
       func: function() {
@@ -124,7 +125,7 @@
       }), potatoPath(Math.random() * 0.5 - 0.5 / 2 + 10));
     }
     w.fields.push(uniformGravity(10));
-    w.fields.push(drag(15, 45));
+    w.fields.push(drag(25, 45));
     return w;
   };
 

@@ -24624,6 +24624,7 @@ function throwSyntaxError (current, i, partial) {
           }
         }
         if ((ml != null) && (mr != null)) {
+          u.tag.msg = "good pre-merge";
           a = area4(up, ml, vp, mr) * bl.dir;
           u.p = N.div(N.add(up, ml, vp, mr), 4);
           u.depth = abs(a * 2 / norm(uvd));
@@ -24646,16 +24647,19 @@ function throwSyntaxError (current, i, partial) {
           }
         } else {
           if (mln != null) {
+            u.tag.msg = "bad, scavange mln";
             u.lNormal = mln;
-            d0 = dot(minus(p0(urs), up), mln);
-            d3 = dot(minus(p3(urs), up), mln);
-            u.depth = d0 > 0 ? d0 : abs(d3);
+            d0 = abs(dot(minus(p0(urs), up), mln));
+            d3 = abs(dot(minus(p3(urs), up), mln));
+            u.depth = min(d0, d3);
           } else if (mrn != null) {
+            u.tag.msg = "bad, scavange mrn";
             u.lNormal = neg(mrn);
-            d0 = dot(minus(p0(uls), up), mrn);
-            d3 = dot(minus(p3(uls), up), mrn);
-            u.depth = d0 > 0 ? d0 : abs(d3);
+            d0 = abs(dot(minus(p0(uls), up), mrn));
+            d3 = abs(dot(minus(p3(uls), up), mrn));
+            u.depth = min(d0, d3);
           } else {
+            u.tag.msg = "sparta";
             switch (uls.type) {
               case 'L':
                 uln = normalize(rot90(minus(p3(uls), p0(uls))));
@@ -24675,7 +24679,7 @@ function throwSyntaxError (current, i, partial) {
             d0r = abs(dot(minus(p0(urs), up), n));
             d3l = abs(dot(minus(p3(uls), up), n));
             d3r = abs(dot(minus(p3(urs), up), n));
-            u.depth = min(d0l, d0r, d3l, d3r) / 4;
+            u.depth = min(d0l, d0r, d3l, d3r);
           }
         }
       });
@@ -25725,11 +25729,12 @@ function throwSyntaxError (current, i, partial) {
     };
 
     World.prototype.step = function(dt, observer) {
-      var a, b, bi, bj, collBodies, collList, contacts, cor, depth, i, impD, impOld, impV, iter, iters, j, l, lNormal, n, p, posFix, tag, tol, va, vb, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var a, avg, b, bi, bj, collBodies, collList, contacts, cor, depth, i, impD, impOld, impV, imps, iter, iters, j, l, lNormal, max, min, n, p, posFix, tag, tol, va, vb, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (observer == null) {
         observer = {};
       }
-      dt = this.solver(this.tNow.t, this._clampTime(dt));
+      dt = this._clampTime(dt);
+      dt = this.solver(this.tNow.t, dt);
       _ref = this.options.collision, tol = _ref.tol, iters = _ref.iters, cor = _ref.cor, posFix = _ref.posFix;
       collBodies = [];
       collList = [];
@@ -25769,6 +25774,7 @@ function throwSyntaxError (current, i, partial) {
           tag.k = (1 + cor) / SE2.plus(n.toAcc(a), n.toAcc(b)).dot(n);
         }
       }
+      imps = [];
       for (iter = _m = 1; _m <= iters; iter = _m += 1) {
         for (_n = 0, _len2 = collList.length; _n < _len2; _n++) {
           _ref5 = collList[_n], a = _ref5.a, b = _ref5.b, contacts = _ref5.contacts;
@@ -25777,17 +25783,47 @@ function throwSyntaxError (current, i, partial) {
           for (_o = 0, _len3 = contacts.length; _o < _len3; _o++) {
             _ref6 = contacts[_o], p = _ref6.p, lNormal = _ref6.lNormal, depth = _ref6.depth, tag = _ref6.tag;
             impOld = tag.imp;
-            tag.imp += (tag.n.dot(vb.minus(va)) + posFix * depth / dt) * tag.k;
+            tag.imp += (tag.n.dot(vb.minus(va)) + (Math.random() * 0.5 + 0.5) * posFix * depth / dt) * tag.k;
             if (tag.imp < 1e-12) {
               tag.imp = 0;
             }
+            if (tag.imp > 20) {
+              tag.imp = 20;
+            }
+            imps.push(tag.imp);
             impD = tag.imp - impOld;
             impV = new Force(tag.n.scale(impD));
-            va.plusEq(impV.toAcc(a));
-            vb.minusEq(impV.toAcc(b));
+            if (a.drive == null) {
+              va.plusEq(impV.toAcc(a));
+            }
+            if (b.drive == null) {
+              vb.minusEq(impV.toAcc(b));
+            }
           }
         }
       }
+      if (imps.length) {
+        avg = N.sum(imps) / imps.length;
+        max = M.max.apply(M, imps);
+        min = M.min.apply(M, imps);
+        console.log("avg: " + (avg.toFixed(8)) + ", max: " + (max.toFixed(8)) + ", min: " + (min.toFixed(8)));
+        if (max > 20) {
+          console.log(this.tNow.t);
+          console.log(dt);
+          debugger;
+        }
+      }
+      this.bodies.forEach(function(body) {
+        var PI, PPI;
+        PI = M.PI;
+        PPI = 2 * M.PI;
+        if (body.frame.th > +PPI) {
+          body.frame.th -= PI;
+        }
+        if (body.frame.th < -PPI) {
+          return body.frame.th += PI;
+        }
+      });
       this.tNow.t += dt;
       this.tNow.lastStep = dt;
       this.tNow.modified = false;
@@ -25825,6 +25861,14 @@ function throwSyntaxError (current, i, partial) {
           forceN = new Force(forceP.neg()).offsetOrigin(vPN);
           return bodyN.frame.acc.plusEq(forceN.toAcc(bodyN));
         }
+      });
+    };
+
+    World.prototype._list = function() {
+      return this.bodies.forEach(function(body, id) {
+        var th, x, y, _ref;
+        _ref = body.frame.pos, x = _ref.x, y = _ref.y, th = _ref.th;
+        return console.log("{id: " + id + ", pos: [" + (x.toFixed(6)) + ", " + (y.toFixed(6)) + ", " + (th.toFixed(6)) + "]}");
       });
     };
 
