@@ -75,7 +75,12 @@ WP1 = (n) ->
       cor: 0.00
       posFix: 0.75
   wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 100 -150 -100 H -180 V 25 H 180 V -100 Z'
-  wok.drive = {type: 'pos', func: -> SE2(0, 0, 0)}
+  wok.drive =
+    type: 'pos'
+    func: (t, dt) ->
+      amp = 0.04
+      phi = 2*PI*t/0.2
+      SE2(amp*M.cos(phi), amp*M.sin(phi), 0)
   for i in [1..n]
     pos = new SE2(
       ((i-1)-(n-1)/2)/n*1.5
