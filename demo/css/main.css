@@ -101,7 +101,7 @@ article {
     margin: 2em;
 }
 
-#main-wrapper {
+.bordered {
     border: 1px solid lightgray;
     margin: 1em 0 0 0;
 }
