@@ -32,7 +32,7 @@ addInvSqrGravity = (world, bodies, G) ->
       world.forceFuncs.add bodies[i], bodies[j], invSqrGravity(G)
 
 drag = (dv, dw) -> (t, body, id) ->
-  if !dw? then dw = da
+  if !dw? then dw = dv
   {x, y, th} = body.frame.vel
   new Force -x*dv, -y*dv, -th*dw
 
@@ -96,13 +96,16 @@ worlds =
   # wok-potato collision test
   WP1: (n = 15) ->
     w = new yaya svgEl,
-      timeScale: 5000
       spaceScale: 200
+      timeScale: 5000
+      timestep:
+        min: 1e-4
+        max: 1e-1
       collision:
         tol: 1e-2
-        iters: 20
-        cor: 0.00
-        posFix: 0.75
+        iters: 10
+        cor: 0.1
+        posFix: 0.9
     w.svg.attr('viewBox', '-300 -300 600 400')
     wok = w.addBody 'wok', new Body(1000, 1000), 'M 150 -100 Q 0 100 -150 -100 H -180 V 25 H 180 V -100 Z'
     wok.drive =
@@ -118,9 +121,9 @@ worlds =
         M.random()*1.2 + .6
         M.random()*PI*2
       )
-      w.addBody "potato#{i}", new Body(5, 0.2, pos: pos), square(Math.random()*0.5-0.5/2 + 10)
+      w.addBody "potato#{i}", new Body(5, 0.1, pos: pos), square(Math.random()*0.5-0.5/2 + 10)
     w.fields.push uniformGravity 10
-    w.fields.push drag 15, 45
+    w.fields.push drag 20, 20
     w
 
   # earth-moon
