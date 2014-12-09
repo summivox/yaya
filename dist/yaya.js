@@ -25083,6 +25083,9 @@ function throwSyntaxError (current, i, partial) {
       };
       n0 = intersection.depth_cc;
       f(L, [0, 1], R, [0, 1], n0);
+      if (!ret.length) {
+        return ret;
+      }
       ret.sort(function(a, b) {
         return a.tl - b.tl;
       });
@@ -25729,7 +25732,7 @@ function throwSyntaxError (current, i, partial) {
     };
 
     World.prototype.step = function(dt, observer) {
-      var a, avg, b, bi, bj, collBodies, collList, contacts, cor, depth, i, impD, impOld, impV, imps, iter, iters, j, l, lNormal, max, min, n, p, posFix, tag, tol, va, vb, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
+      var a, b, bi, bj, collBodies, collList, contacts, cor, depth, i, impD, impOld, impV, iter, iters, j, l, lNormal, n, p, posFix, tag, tol, va, vb, _i, _j, _k, _l, _len, _len1, _len2, _len3, _m, _n, _o, _ref, _ref1, _ref2, _ref3, _ref4, _ref5, _ref6;
       if (observer == null) {
         observer = {};
       }
@@ -25774,7 +25777,6 @@ function throwSyntaxError (current, i, partial) {
           tag.k = (1 + cor) / SE2.plus(n.toAcc(a), n.toAcc(b)).dot(n);
         }
       }
-      imps = [];
       for (iter = _m = 1; _m <= iters; iter = _m += 1) {
         for (_n = 0, _len2 = collList.length; _n < _len2; _n++) {
           _ref5 = collList[_n], a = _ref5.a, b = _ref5.b, contacts = _ref5.contacts;
@@ -25790,7 +25792,9 @@ function throwSyntaxError (current, i, partial) {
             if (tag.imp > 20) {
               tag.imp = 20;
             }
-            imps.push(tag.imp);
+            if (isNaN(tag.imp)) {
+              tag.imp = 0;
+            }
             impD = tag.imp - impOld;
             impV = new Force(tag.n.scale(impD));
             if (a.drive == null) {
@@ -25802,17 +25806,18 @@ function throwSyntaxError (current, i, partial) {
           }
         }
       }
-      if (imps.length) {
-        avg = N.sum(imps) / imps.length;
-        max = M.max.apply(M, imps);
-        min = M.min.apply(M, imps);
-        console.log("avg: " + (avg.toFixed(8)) + ", max: " + (max.toFixed(8)) + ", min: " + (min.toFixed(8)));
-        if (max > 20) {
-          console.log(this.tNow.t);
-          console.log(dt);
-          debugger;
-        }
-      }
+
+      /*
+      if imps.length
+        avg = N.sum(imps)/imps.length
+        max = M.max(imps...)
+        min = M.min(imps...)
+        console.log "avg: #{avg.toFixed(8)}, max: #{max.toFixed(8)}, min: #{min.toFixed(8)}"
+        if max > 20
+          console.log @tNow.t
+          console.log dt
+          debugger
+       */
       this.bodies.forEach(function(body) {
         var PI, PPI;
         PI = M.PI;

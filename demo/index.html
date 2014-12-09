@@ -26,6 +26,12 @@
         <article class="markdown-body">
             <h1>Yaya Demo</h1>
 
+            <div id="sel">
+                <input type="button" value="Wok-Potato" id="btn_wp1" onclick="main('WP1');$('#sel').hide();"/>
+                <input type="button" value="Earth-Moon" id="btn_earthMoon" onclick="main('earthMoon');$('#sel').hide();"/>
+                <input type="button" value="Three-Body Figure 8" id="btn_figure8" onclick="main('figure8');$('#sel').hide();"/>
+            </div>
+
             <div>Time: <span id="disp_time"></span></div>
             <div>FPS: <span id="disp_fps"></span></div>
             <div>
@@ -33,8 +39,8 @@
                 <input type="button" value="pause" id="btn_pause"/>
                 <!--<input type="button" value="reset" id="btn_reset"/>-->
             </div>
-            <div id="main-wrapper" class="bordered" width="800px" height="600px">
-                <svg id="main" width="100%" height="100%" viewBox="-400 -300 800 600">
+            <div id="svg-main-wrapper" class="bordered" width="800px" height="600px">
+                <svg id="svg-main" width="100%" height="100%" viewBox="-400 -300 800 600">
                 </svg>
             </div>
         </article>
