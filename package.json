@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "jquery": "2.x",
-    "yaya-core": "0.0.1",
     "lodash": "latest",
-    "numeric": "latest"
+    "numeric": "latest",
+    "yaya-core": "0.0.1"
   },
   "devDependencies": {
     "iced-coffee-script": "latest",
