@@ -115,10 +115,11 @@
     wok.drive = {
       type: 'pos',
       func: function(t, dt) {
-        var amp, phi;
-        amp = 0.04;
+        var ampX, ampY, phi;
+        ampX = 0.03;
+        ampY = 0.05;
         phi = 2 * PI * t / 0.2;
-        return SE2(amp * M.cos(phi), amp * M.sin(phi), 0);
+        return SE2(ampX * M.cos(phi), ampY * M.sin(phi), 0);
       }
     };
     for (i = _i = 1; 1 <= n ? _i <= n : _i >= n; i = 1 <= n ? ++_i : --_i) {
@@ -128,7 +129,7 @@
       }), potatoPath(Math.random() * 0.5 - 0.5 / 2 + 10));
     }
     w.fields.push(uniformGravity(10));
-    w.fields.push(drag(25, 45));
+    w.fields.push(drag(15, 45));
     return w;
   };
 

@@ -78,9 +78,10 @@ WP1 = (n) ->
   wok.drive =
     type: 'pos'
     func: (t, dt) ->
-      amp = 0.04
+      ampX = 0.03
+      ampY = 0.05
       phi = 2*PI*t/0.2
-      SE2(amp*M.cos(phi), amp*M.sin(phi), 0)
+      SE2(ampX*M.cos(phi), ampY*M.sin(phi), 0)
   for i in [1..n]
     pos = new SE2(
       ((i-1)-(n-1)/2)/n*1.5
@@ -89,7 +90,7 @@ WP1 = (n) ->
     )
     w.addBody "potato#{i}", new Body(5, 0.2, pos: pos), potatoPath(Math.random()*0.5-0.5/2 + 10)
   w.fields.push uniformGravity 10
-  w.fields.push drag 25, 45
+  w.fields.push drag 15, 45
   w
 
 class Runner
